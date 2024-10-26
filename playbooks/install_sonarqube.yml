@@ -1,0 +1,12 @@
+
+# Description: Install SonarQube multiple OS
+# This code is licensed under the MIT License
+# Copyright (c) 2024, NEBU-LAH SDN. BHD.
+---
+- name: Install SonarQube on multiple OS
+  hosts: all
+  become: yes
+
+  roles:
+    - docker
+    - sonarqube

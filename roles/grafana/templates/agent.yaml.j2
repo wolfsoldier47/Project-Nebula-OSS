@@ -1,0 +1,9 @@
+metrics:
+  global:
+    scrape_interval: 15s
+  configs:
+    - name: 'example'
+      scrape_configs:
+        - job_name: 'prometheus'
+          static_configs:
+            - targets: ['localhost:9090']

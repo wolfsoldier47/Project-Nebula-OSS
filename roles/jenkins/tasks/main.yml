@@ -1,0 +1,49 @@
+---
+# tasks file for .
+- name: Check if Docker is installed
+  command: docker --version
+  register: docker_check
+  ignore_errors: yes
+
+- name: Fail if Docker is not installed
+  fail:
+    msg: "Docker is not installed. Please install Docker and try again."
+  when: docker_check.rc != 0
+
+- name: Pull the Jenkins image
+  docker_image:
+    name: jenkins/jenkins
+    tag: lts
+    source: pull
+
+- name: Create a directory for Jenkins data
+  file:
+    path: /var/jenkins_home
+    state: directory
+    mode: '0755'
+
+- name: Copy Jenkins config file to the target machine
+  copy:
+    src: "{{ local_config_file }}"
+    dest: "{{ jenkins_config_path }}"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Create and start Jenkins container
+  docker_container:
+    name: jenkins
+    image: jenkins/jenkins:lts
+    state: started
+    restart_policy: always
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - "{{ jenkins_config_path }}:/var/jenkins_home/config.xml"  # Mounting the config file
+
+- name: Create Docker volume for Jenkins data
+  docker_volume:
+    name: jenkins_home
+    state: present

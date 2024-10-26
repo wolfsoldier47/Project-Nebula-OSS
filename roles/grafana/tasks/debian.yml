@@ -1,0 +1,25 @@
+---
+- name: Create directory for WAL data
+  file:
+    path: "{{ wal_data_directory }}"
+    state: directory
+    mode: '0755'
+
+- name: Create configuration file from template
+  template:
+    src: templates/agent.yaml.j2
+    dest: "{{ config_file_path }}"
+
+- name: Run Grafana Agent container
+  docker_container:
+    name: grafana_agent
+    image: "grafana/agent:{{ version }}"
+    state: started
+    volumes:
+      - "{{ wal_data_directory }}:/etc/agent/data"
+      - "{{ config_file_path }}:/etc/agent/agent.yaml"
+    restart_policy: always
+    published_ports:
+          - "3000:3000"
+          - "9090:9090"
+

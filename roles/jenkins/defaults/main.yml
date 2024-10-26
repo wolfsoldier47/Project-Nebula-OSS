@@ -1,0 +1,4 @@
+---
+# defaults file for .
+jenkins_config_path: /var/jenkins_home/config.xml  # Path inside the container
+local_config_file: /path/to/your/config.xml          # Path on the control machine
